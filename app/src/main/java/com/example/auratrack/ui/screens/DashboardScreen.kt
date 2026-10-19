@@ -1,15 +1,19 @@
 package com.example.aurasugi.ui.screens
 
+import android.app.DatePickerDialog
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Today
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.aurasugi.GreyishBlackCard
 import com.example.aurasugi.GreyishBlackSurface
@@ -21,15 +25,29 @@ import com.example.aurasugi.ui.MainViewModel
 import com.example.aurasugi.ui.components.EditFoodEntryDialog
 import com.example.aurasugi.ui.components.LoggedFoodEntryCard
 import com.example.aurasugi.ui.components.neonGlow
+import java.time.LocalDate
 
 @Composable
 fun DashboardScreen(viewModel: MainViewModel) {
     val selectedDate by viewModel.selectedDate.collectAsState()
     val dailySummary by viewModel.dailySummary.collectAsState()
     val entries by viewModel.entriesForSelectedDate.collectAsState()
+    val context = LocalContext.current
 
     val dateString = selectedDate.toString()
     var editingEntry by remember { mutableStateOf<FoodEntry?>(null) }
+
+    fun showDatePicker() {
+        DatePickerDialog(
+            context,
+            { _, year, month, dayOfMonth ->
+                viewModel.setSelectedDate(LocalDate.of(year, month + 1, dayOfMonth))
+            },
+            selectedDate.year,
+            selectedDate.monthValue - 1,
+            selectedDate.dayOfMonth
+        ).show()
+    }
 
     editingEntry?.let { entry ->
         EditFoodEntryDialog(
@@ -56,9 +74,29 @@ fun DashboardScreen(viewModel: MainViewModel) {
             IconButton(onClick = { viewModel.previousDay() }) {
                 Icon(Icons.Default.ChevronLeft, contentDescription = "Previous Day", tint = NeoGreen)
             }
-            Text(text = dateString, style = MaterialTheme.typography.titleLarge, color = SoftText)
-            IconButton(onClick = { viewModel.nextDay() }) {
-                Icon(Icons.Default.ChevronRight, contentDescription = "Next Day", tint = NeoGreen)
+
+            TextButton(onClick = { showDatePicker() }) {
+                Icon(
+                    imageVector = Icons.Default.CalendarToday,
+                    contentDescription = "Pick Date",
+                    tint = NeoGreen,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                    text = dateString,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = SoftText
+                )
+            }
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                IconButton(onClick = { viewModel.nextDay() }) {
+                    Icon(Icons.Default.ChevronRight, contentDescription = "Next Day", tint = NeoGreen)
+                }
+                IconButton(onClick = { viewModel.jumpToToday() }) {
+                    Icon(Icons.Default.Today, contentDescription = "Jump to Today", tint = NeoGreen)
+                }
             }
         }
 

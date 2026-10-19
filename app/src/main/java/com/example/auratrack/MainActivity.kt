@@ -3,11 +3,14 @@ package com.example.aurasugi
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -85,9 +88,10 @@ private val CustomDarkColorScheme = darkColorScheme(
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         val database = AppDatabase.getDatabase(applicationContext)
-        val repository = AppRepository(database.entryDao(), database.savedItemsDao())
+        val repository = AppRepository(database.entryDao(), database.savedItemsDao(), database.apiKeyDao())
         val usdaPreferences = com.example.aurasugi.data.preferences.UsdaPreferences(applicationContext)
         val viewModelFactory = MainViewModelFactory(repository, usdaPreferences)
 
@@ -199,7 +203,10 @@ fun MainAppLayout(viewModelFactory: MainViewModelFactory) {
             NavHost(
                 navController = navController,
                 startDestination = Screen.Dashboard.route,
-                modifier = Modifier.padding(innerPadding)
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .consumeWindowInsets(innerPadding)
+                    .imePadding()
             ) {
                 composable(Screen.Dashboard.route) { DashboardScreen(mainViewModel) }
                 composable(Screen.EntryRecord.route) { EntryRecordScreen(mainViewModel) }

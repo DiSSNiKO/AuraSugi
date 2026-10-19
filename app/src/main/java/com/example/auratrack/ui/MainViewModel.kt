@@ -80,8 +80,23 @@ class MainViewModel(
             initialValue = emptyList()
         )
 
+    init {
+        viewModelScope.launch {
+            repository.getApiKey()?.collect { keyFromDb ->
+                if (!keyFromDb.isNullOrEmpty()) {
+                    _usdaApiKey.value = keyFromDb
+                    usdaPreferences?.usdaApiKey = keyFromDb
+                }
+            }
+        }
+    }
+
     fun setSelectedDate(date: LocalDate) {
         _selectedDate.value = date
+    }
+
+    fun jumpToToday() {
+        _selectedDate.value = LocalDate.now()
     }
 
     fun previousDay() {
@@ -103,6 +118,9 @@ class MainViewModel(
     fun setUsdaApiKey(key: String) {
         _usdaApiKey.value = key
         usdaPreferences?.usdaApiKey = key
+        viewModelScope.launch {
+            repository.setApiKey(key)
+        }
     }
 
     fun searchUsdaFoods(query: String) {

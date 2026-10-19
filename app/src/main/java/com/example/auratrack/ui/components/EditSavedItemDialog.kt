@@ -2,8 +2,11 @@ package com.example.aurasugi.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.aurasugi.GreyishBlackSurface
 import com.example.aurasugi.NeoGreen
@@ -34,7 +37,10 @@ fun EditSavedItemDialog(
         containerColor = GreyishBlackSurface,
         title = { Text("Edit Saved Item", color = NeoGreen) },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Column(
+                modifier = Modifier.verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Name") }, singleLine = true)
                 OutlinedTextField(
                     value = computedCalories.toString(),

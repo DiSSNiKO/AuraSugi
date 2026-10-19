@@ -4,14 +4,16 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.Room
+import com.example.aurasugi.data.model.ApiKey
 import com.example.aurasugi.data.model.FoodEntry
 import com.example.aurasugi.data.model.SavedItem
 
-@Database(entities = [FoodEntry::class, SavedItem::class], version = 1, exportSchema = false)
+@Database(entities = [FoodEntry::class, SavedItem::class, ApiKey::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun entryDao(): EntryDao
     abstract fun savedItemsDao(): SavedItemsDao
+    abstract fun apiKeyDao(): ApiKeyDao
 
     companion object {
         @Volatile
